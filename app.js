@@ -9,9 +9,13 @@ server.listen(4000, () => {
 
 const httpServer = http.createServer((req, res) => {
 	console.log('got something');
-	console.log(req);
 	res.writeHead(200, { 'Content-Type': 'text/html' });
-	res.write('sdfsdfdsf');
+	let data = '';
+	req.on('data', (byte) => {
+		data = byte + '';
+		console.log(byte + '');
+	});
+	res.write('');
 	res.end();
 }).listen(8080);
 
@@ -25,7 +29,3 @@ server.post('/api/messages', connector.listen());
 let bot = new UniversalBot(connector, (session) => {
 	// Root dialog code goes here...
 });
-
-
-
-
