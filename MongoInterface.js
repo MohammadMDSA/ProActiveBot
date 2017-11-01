@@ -2,19 +2,21 @@ const MongoClient = require('mongodb').MongoClient;
 const Address = 'mongodb://localhost:27017/botDb';
 
 module.exports = class DB {
-	async insert(collName, object) {
+	async insert(collName, object, callback) {
 		await MongoClient.connect(Address, (err, db) => {
 			db.collection(collName).insertOne(object, (err, result) => {
 				if (err) throw err;
 				db.close();
+				callback();
 			});
 		});
 	}
-	async insertMany(collName, object) {
+	async insertMany(collName, object, callback) {
 		MongoClient.connect(Address, (err, db) => {
 			db.collection(collName).insertMany(object, (err, res) => {
 				if (err) throw err;
 				db.close();
+				callback();
 			});
 		});
 	}
@@ -32,9 +34,37 @@ module.exports = class DB {
 		await MongoClient.connect(Address, (err, db) => {
 			if (err) throw err;
 			db.collection(collName).find(condition).toArray((err, result) => {
-				if(err) throw err;
+				if (err) throw err;
 				db.close();
 				callback(result);
+			});
+		});
+	}
+	async updateOneDocument(collName, condition, updatedDocument, callback) {
+		await MongoClient.connect(Address, (err, db) => {
+			if (err) throw err;
+			db.collection(collName).updateOne(condition, updatedDocument, (err, res) => {
+				if (err) throw err;
+				db.close();
+				callback();
+			});
+		});
+	}
+	async updateOneField(collName, condition, updatedField, callback) {
+		await MongoClient.connect(Address, (err, db) => {
+			if (err) throw err;
+			db.collection(collName).updateOne(condition, { $set: updatedField }, (err, res) => {
+				if (err) throw err;
+				db.close();
+			});
+		});
+	}
+	async updateFields(collName, condition, updatedField, callback) {
+		await MongoClient.connect(Address, (err, db) => {
+			if (err) throw err;
+			db.collection(collName).updateMany(condition, { $set: updatedField }, (err, res) => {
+				if (err) throw err;
+				db.close();
 			});
 		});
 	}
