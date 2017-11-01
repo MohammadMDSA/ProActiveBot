@@ -34,8 +34,8 @@ const httpServer = http.createServer((req, res) => {
 }).listen(8080);
 
 let connector = new ChatConnector({
-	appId: '',
-	appPassword: ''
+	appId: '22c1ba29-61c8-4be1-ab68-1fdd1ab627cf',
+	appPassword: 'iFD1HuaBL6xbgj0GqCnzwDd'
 });
 
 server.post('/api/messages', connector.listen());
@@ -65,5 +65,5 @@ let bot = new UniversalBot(connector, (session) => {
 			}
 		);
 	}, 100);
-
+	session.send('Yo');
 });
