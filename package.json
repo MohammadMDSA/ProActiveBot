@@ -19,6 +19,7 @@
   "dependencies": {
     "botbuilder": "^3.11.0",
     "http": "0.0.0",
+    "mongodb": "^2.2.33",
     "restify": "^6.2.3"
   }
 }

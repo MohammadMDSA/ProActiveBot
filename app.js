@@ -17,6 +17,17 @@ const httpServer = http.createServer((req, res) => {
 	req.on('data', (byte) => {
 		data = byte + '';
 		console.log(byte + '');
+
+		db.find('users', {}, (result) => {
+			result.forEach((item) => {
+				db.insert('proActive',
+					{
+						userId: item.userId,
+						isSent: false,
+						text: data
+					});
+			});
+		});
 	});
 	res.write('');
 	res.end();
@@ -31,17 +42,28 @@ server.post('/api/messages', connector.listen());
 
 let bot = new UniversalBot(connector, (session) => {
 	// Root dialog code goes here...
-		setInterval(() => {
-			db.find('proActive',
-				{
-					$and:[{"userId" : session.message.user.id}, {"isSent" : false}]
-				},
-				(result) => {
-					result.forEach((item) => {
-						session.send(item.text);
-					});
-				}
-			);
-		}, 60000);
+	db.find('users', { "userId": session.message.user.id }, (result) => {
+		if (result.length === 0) {
+			db.insert('users', {
+				userId: session.message.user.id,
+				addressHandler: session.message.address
+			});
+		}
+	});
+
+	setInterval(() => {
+		db.find('proActive',
+			{
+				$and: [{ "userId": session.message.user.id }, { "isSent": false }]
+			},
+			(result) => {
+				result.forEach((item) => {
+					session.send(item.text);
+				});
+
+				db.updateFields('proActive', { $and: [{ "userId": session.message.user.id }, { "isSent": false }] }, { "isSent": true })
+			}
+		);
+	}, 100);
 
 });

@@ -2,7 +2,7 @@ const MongoClient = require('mongodb').MongoClient;
 const Address = 'mongodb://localhost:27017/botDb';
 
 module.exports = class DB {
-	async insert(collName, object, callback) {
+	async insert(collName, object, callback = () => {}) {
 		await MongoClient.connect(Address, (err, db) => {
 			db.collection(collName).insertOne(object, (err, result) => {
 				if (err) throw err;
@@ -20,7 +20,7 @@ module.exports = class DB {
 			});
 		});
 	}
-	async findOne(collName, condition, callback) {
+	async findOne(collName, condition, callback = () => {}) {
 		await MongoClient.connect(Address, (err, db) => {
 			if (err) throw err;
 			db.collection(collName).findOne(condition, (err, result) => {
@@ -30,7 +30,7 @@ module.exports = class DB {
 			});
 		});
 	}
-	async find(collName, condition, callback) {
+	async find(collName, condition, callback = () => {}) {
 		await MongoClient.connect(Address, (err, db) => {
 			if (err) throw err;
 			db.collection(collName).find(condition).toArray((err, result) => {
@@ -40,7 +40,7 @@ module.exports = class DB {
 			});
 		});
 	}
-	async updateOneDocument(collName, condition, updatedDocument, callback) {
+	async updateOneDocument(collName, condition, updatedDocument, callback = () => {}) {
 		await MongoClient.connect(Address, (err, db) => {
 			if (err) throw err;
 			db.collection(collName).updateOne(condition, updatedDocument, (err, res) => {
@@ -50,21 +50,23 @@ module.exports = class DB {
 			});
 		});
 	}
-	async updateOneField(collName, condition, updatedField, callback) {
+	async updateOneField(collName, condition, updatedField, callback = () => {}) {
 		await MongoClient.connect(Address, (err, db) => {
 			if (err) throw err;
 			db.collection(collName).updateOne(condition, { $set: updatedField }, (err, res) => {
 				if (err) throw err;
 				db.close();
+				callback();
 			});
 		});
 	}
-	async updateFields(collName, condition, updatedField, callback) {
+	async updateFields(collName, condition, updatedField, callback = () => {}) {
 		await MongoClient.connect(Address, (err, db) => {
 			if (err) throw err;
 			db.collection(collName).updateMany(condition, { $set: updatedField }, (err, res) => {
 				if (err) throw err;
 				db.close();
+				callback();
 			});
 		});
 	}
