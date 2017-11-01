@@ -1,6 +1,9 @@
 const restify = require('restify');
 const { Message, Prompts, UniversalBot, ChatConnector } = require('botbuilder');
 const http = require('http');
+const mongo = require('./MongoInterface');
+
+let db = new mongo();
 
 const server = restify.createServer();
 server.listen(4000, () => {
@@ -29,7 +32,16 @@ server.post('/api/messages', connector.listen());
 let bot = new UniversalBot(connector, (session) => {
 	// Root dialog code goes here...
 		setInterval(() => {
-			
+			db.find('proActive',
+				{
+					$and:[{"userId" : session.message.user.id}, {"isSent" : false}]
+				},
+				(result) => {
+					result.forEach((item) => {
+						session.send(item.text);
+					});
+				}
+			);
 		}, 60000);
 
 });
