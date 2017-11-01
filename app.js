@@ -28,4 +28,8 @@ server.post('/api/messages', connector.listen());
 
 let bot = new UniversalBot(connector, (session) => {
 	// Root dialog code goes here...
+		setInterval(() => {
+			
+		}, 60000);
+
 });
